@@ -1,0 +1,17 @@
+resource "aws_eip" "spark-jenkins-eip"
+{
+  instance = "${aws_instance.spark-jenkins-ec2-instance.id}"
+  vpc = true
+  tags {
+     Name = "jenkins.richierichard.com"
+  }
+}
+
+resource "aws_eip" "spark-application-eip"
+{
+  instance = "${aws_instance.spark-application-ec2-instance.id}"
+  vpc = true
+  tags {
+     Name = "spark.richierichard.com"
+  }
+}

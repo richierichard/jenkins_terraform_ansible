@@ -1,0 +1,41 @@
+Build_Previous_Static_Version
+-----------------------------
+
+source ~/.bash_profile
+
+rm -rf /var/www/html/repos/Redhat/7/x86_64/Packages/*
+cp /opt/rpm_backup/* /var/www/html/repos/Redhat/7/x86_64/Packages/
+createrepo --update /var/www/html/repos/Redhat/7/x86_64/
+
+Deploy_Previous_Static_Version
+------------------------------
+
+yum -y remove helloworld
+yum clean all
+rm -rf /var/cache/yum
+yum -y install helloworld
+if [[ -L "/var/www/html" && -d "/var/www/html" ]]
+    then
+    	unlink /var/www/html
+fi
+find /opt/ -type d -empty -delete
+lastet_version=`rpm -qa | grep helloworld | awk -F"-" '{print $2}'`
+ln -s /opt/$lastet_version /var/www/html
+
+Build_Previous_Dynamic_Version
+------------------------------
+
+source ~/.bash_profile
+
+version=`date +%Y_%m_%d`_${BUILD_NUMBER}
+
+if [[ $deploy == "yes" ]]
+then
+	if [[ ! -z "$(ls -A /var/www/html/dynamic_app/)" ]]
+	then
+		rm -rf /var/www/html/dynamic_app/*
+    	mv /var/www/html/dynamic_app_backup/backup.war /var/www/html/dynamic_app/latest.war
+	fi
+else
+	echo "Not Deploying...."
+fi

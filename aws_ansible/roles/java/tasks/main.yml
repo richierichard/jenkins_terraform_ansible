@@ -1,0 +1,44 @@
+---
+- name: Check if Java tar archive is present
+  stat: path={{ download_directory }}/jdk-8u181-linux-x64.tar.gz
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+  register: javatarfile
+
+- name: Download Java
+  shell: "wget -O {{ download_directory }}/jdk-8u181-linux-x64.tar.gz --header \"Cookie: oraclelicense=accept-securebackup-cookie\" {{ java_download_url }}"
+  when: not javatarfile.stat.exists
+
+- name: Check if Java is already unzipped
+  stat: path={{ download_directory }}/jdk1.8.0_181
+  register: javaunzipped
+
+- name: Unarchive Java tar file
+  unarchive: src={{ download_directory }}/jdk-8u181-linux-x64.tar.gz dest={{ download_directory }} copy=no
+  when: not javaunzipped.stat.exists
+
+- name: Test for JAVA_HOME
+  command: grep "^JAVA_HOME" /root/.bash_profile
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+  register: test_java_home
+
+- name: Ansible insert line before PATH
+  lineinfile: path="/root/.bash_profile" line=JAVA_HOME="/opt/jdk1.8.0_181" insertbefore="PATH"
+  when: test_java_home.rc == 1
+
+- name: Test of JAVA_HOME in PATH
+  command: grep "JAVA_HOME/bin" /root/.bash_profile
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+  register: test_java_in_path
+
+- name: add JAVA to PATH
+  lineinfile: path="/root/.bash_profile" line=PATH=$PATH:$JAVA_HOME/bin insertbefore="export PATH"
+  when: test_java_in_path.rc == 1
+
+- name: Symlink java to /usr/bin/
+  file: src={{ download_directory }}/jdk1.8.0_181/bin/java dest="/usr/bin/java" state=link 

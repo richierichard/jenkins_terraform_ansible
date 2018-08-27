@@ -1,0 +1,21 @@
+---
+- name: Install Jenkins Repo
+  get_url: url={{ jenkins_repo_url }} dest={{ yum_repos_directory }}/jenkins.repo
+
+- name: Install GPG Key
+  rpm_key: key={{ jenkins_gpg_key }} state=present
+
+- name: Install Jenkins
+  yum: pkg=jenkins state=present
+
+- name: Change the user for Jenkins
+  replace: path={{ jenkins_config_file }} regexp=JENKINS_USER="jenkins" replace=JENKINS_USER="root"
+
+- name: Copy the nginx configuration file to nginx conf.d folder
+  copy: src=files/{{ jenkins_configuration_filename }} dest={{ nginx_conf_directory }}/{{ jenkins_configuration_filename }}
+
+- name: Start Jenkins
+  service: name=jenkins state=started enabled=yes 
+
+- name: Restart Nginx
+  service: name=nginx state=restarted

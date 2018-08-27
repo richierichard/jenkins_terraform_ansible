@@ -1,0 +1,25 @@
+---
+- name: Install EPEL Release Repo
+  yum: name=epel-release state=latest
+
+- name: Yum update
+  yum: name=* state=latest
+
+- name: Install Misc Packages
+  yum: pkg={{ item }} state=latest
+  with_items:
+  - wget
+  - vim
+  - curl
+  - zip
+  - unzip
+  - git
+
+#- name: Turn off firewalld service
+#  service: name=firewalld state=stopped enabled=no
+
+- name: Install the libselinux-python package
+  yum: name=libselinux-python state=present
+
+- name: Disable SELinux
+  selinux: state=disabled 

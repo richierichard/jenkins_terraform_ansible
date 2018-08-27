@@ -1,0 +1,23 @@
+Deploy_Static_Spack_Application
+-------------------------------
+
+deploy_rpm: no/yes
+Node : Production 1
+
+---
+
+if [[ $deploy_rpm == "yes" ]]
+then
+	yum clean all
+	rm -rf /var/cache/yum
+	yum -y update helloworld
+    if [[ -L "/var/www/html" && -d "/var/www/html" ]]
+    then
+    	unlink /var/www/html
+    fi
+    find /opt/ -type d -empty -delete
+    lastet_version=`rpm -qa | grep helloworld | awk -F"-" '{print $2}'`
+    ln -s /opt/$lastet_version /var/www/html
+else
+	echo "Nothing to do"
+fi

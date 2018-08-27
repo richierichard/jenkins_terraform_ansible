@@ -1,0 +1,41 @@
+---
+- name: Check if the zip file exists
+  stat: path={{ download_directory }}/apache-ant-1.10.5-bin.zip
+  register: antzip
+
+- name: Download Ant and unpack in /opt
+  get_url: url={{ ant_download_url }} dest={{ download_directory }}/apache-ant-1.10.5-bin.zip
+  when: not antzip.stat.exists
+
+- name: Check if ant has been unzipped
+  stat: path={{ download_directory }}/apache-ant-1.10.5
+  register: antunzip
+
+- name: Unpack Ant Zip Archive
+  unarchive: src={{ download_directory }}/apache-ant-1.10.5-bin.zip dest={{ download_directory }} copy=no
+  when: not antunzip.stat.exists
+
+- name: Test for ANT_HOME
+  command: grep "^ANT_HOME" /root/.bash_profile
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+  register: test_ant_home
+  
+- name: Ansible insert line before PATH
+  lineinfile: path="/root/.bash_profile" line=ANT_HOME="/opt/apache-ant-1.10.5" insertbefore="PATH"
+  when: test_ant_home.rc == 1
+
+- name: Test of ANT in PATH
+  command: grep "ANT_HOME/bin" /root/.bash_profile
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+  register: test_ant_in_path
+
+- name: add ANT to PATH
+  lineinfile: path="/root/.bash_profile" line=PATH=$PATH:$ANT_HOME/bin insertbefore="export PATH"
+  when: test_ant_in_path.rc == 1
+
+- name: Source the bash.profile file
+  shell: source /root/.bash_profile

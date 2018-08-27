@@ -1,0 +1,6 @@
+---
+- name: Install Tomcat Server
+  yum: pkg=tomcat state=present
+
+- name: Start Tomcat Server
+  service: name=tomcat state=started enabled=yes

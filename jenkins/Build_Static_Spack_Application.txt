@@ -1,0 +1,47 @@
+Build_Static_Spack_Application
+------------------------------
+
+deploy_rpm: no/yes
+https://github.com/richierichard/spark_static_demo.git
+
+----
+
+source ~/.bash_profile
+
+version=`date +%Y_%m_%d`_${BUILD_NUMBER}
+echo $version
+
+rm -rf /media/*
+mkdir -p /media/helloworld
+cp -r * /media/helloworld
+cd /media/
+tar -czvf helloworld.tar.gz helloworld
+
+rm -rf /root/rpmbuild/SOURCES/*
+cp helloworld.tar.gz /root/rpmbuild/SOURCES/
+
+rm -rf /root/rpmbuild/SPECS/*
+cp /root/rpmbuild/template/helloworld.spec /root/rpmbuild/SPECS/
+cd /media/helloworld/
+ls -l * | awk '{print $9}' | sed -e 's|^|/opt/'"${version}"'/|' >> /root/rpmbuild/SPECS/helloworld.spec
+
+sed -i 's|CHANGE_ME|/opt/'"${version}"'|g' /root/rpmbuild/SPECS/helloworld.spec
+sed -i "s/Version:.*/Version: "${version}"/g" /root/rpmbuild/SPECS/helloworld.spec
+
+rm -rf /root/rpmbuild/RPMS/*
+
+cd /root/rpmbuild/SPECS/
+rpmbuild -ba helloworld.spec
+
+if [[ $deploy_rpm == "yes" ]]
+then
+	rm -rf /opt/rpm_backup && mkdir -p /opt/rpm_backup/
+    cp /var/www/html/repos/Redhat/7/x86_64/Packages/* /opt/rpm_backup/
+	rm -rf /var/www/html/repos/Redhat/7/x86_64/Packages/*
+	cp /root/rpmbuild/RPMS/noarch/*.rpm /var/www/html/repos/Redhat/7/x86_64/Packages/
+    createrepo --update /var/www/html/repos/Redhat/7/x86_64/
+else
+	echo "not uploading"
+fi
+
+Trigger : Deploy_Static_Spack_Application --> Current Build Parameters

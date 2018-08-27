@@ -1,0 +1,22 @@
+Deploy_Dynamic_Spark_Application
+--------------------------------
+
+deploy: no/yes
+Node : Production 1
+---
+
+if [[ $deploy == "yes" ]]
+then
+	rm -rf /opt/dynamic_*
+	version=`date +%Y_%m_%d`_${BUILD_NUMBER}
+	mkdir /opt/dynamic_${version}
+	cd /opt/dynamic_${version}
+	wget http://mirror.richierichard.com/dynamic_app/latest.war
+	mv latest.war AntExample.war
+	unlink /usr/share/tomcat/webapps
+	ln -s /opt/dynamic_${version} /usr/share/tomcat/webapps
+	chown -R tomcat:tomcat /opt/dynamic_${version}
+	service tomcat restart
+else
+	echo "Nothing."
+fi

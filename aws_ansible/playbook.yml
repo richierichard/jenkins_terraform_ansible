@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: yes
+  roles:
+    - machine_bootstrap
+    - nginx
+    - java
+    - jenkins
+    - ant
+    - yum_repository
+  tags:
+    - build_server
+
+- hosts: all
+  become: yes
+  roles:
+    - machine_bootstrap
+    - nginx
+    - java
+    - tomcat
+  tags:
+    - application_server

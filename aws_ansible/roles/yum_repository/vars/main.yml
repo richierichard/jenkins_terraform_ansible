@@ -1,0 +1,5 @@
+# Global Variables
+root_directory: "/var/www/html"
+spark_yum_directory: "repos/Redhat/7/x86_64/Packages"
+yum_initialize: "repos/Redhat/7/x86_64/"
+buildroot: "/root/rpmbuild"

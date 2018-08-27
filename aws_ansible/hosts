@@ -1,0 +1,5 @@
+[build_server]
+35.174.132.197	ansible_ssh_user=centos		ansible_ssh_private_key_file=/Users/richie/spark/aws_terraform/us-east-1/spark-demo-key-pair
+
+[application_server]
+35.169.154.155	ansible_ssh_user=centos		ansible_ssh_private_key_file=/Users/richie/spark/aws_terraform/us-east-1/spark-demo-key-pair

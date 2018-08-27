@@ -1,0 +1,27 @@
+Build_Dynamic_Spark_Application
+-------------------------------
+
+deploy: no/yes
+https://github.com/richierichard/spark_dynamic_demo.git
+ant clean
+ant war
+
+------
+
+source ~/.bash_profile
+
+version=`date +%Y_%m_%d`_${BUILD_NUMBER}
+
+if [[ $deploy == "yes" ]]
+then
+	if [[ ! -z "$(ls -A /var/www/html/dynamic_app/)" ]]
+	then
+		rm -rf /var/www/html/dynamic_app_backup/*
+    	mv /var/www/html/dynamic_app/* /var/www/html/dynamic_app_backup/backup.war
+	fi
+	cp ${WORKSPACE}/dist/AntExample.war /var/www/html/dynamic_app/latest.war
+else
+	echo "Not Deploying...."
+fi
+
+Trigger : Deploy_Dynamic_Spark_Application --> Current Build Parameters

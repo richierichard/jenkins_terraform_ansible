@@ -1,0 +1,29 @@
+---
+- name: Install createrepo package
+  yum: pkg=createrepo state=present
+
+- name: Create root directory
+  file: path={{ root_directory }} state=directory
+
+- name: Create Yum repository directories
+  file: path={{ root_directory }}/{{ spark_yum_directory }} state=directory
+
+- name: Initialize Repository
+  command: createrepo {{ root_directory }}/{{ yum_initialize }}
+
+- name: Install rpmbuild package
+  yum: pkg="rpm-build" state=present
+
+- name: Create necessary directories needed to create RPM
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ buildroot }}/BUILD"
+    - "{{ buildroot }}/BUILDROOT"
+    - "{{ buildroot }}/RPMS"
+    - "{{ buildroot }}/SOURCES"
+    - "{{ buildroot }}/SPECS"
+    - "{{ buildroot }}/SRPMS"
+    - "{{ buildroot }}/template"
+
+- name: Copy the RPM Spec file template
+  copy: src=files/template_rpm.spec dest={{ buildroot }}/template/helloworld.spec

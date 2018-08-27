@@ -1,0 +1,38 @@
+Terraform
+
+- Variable
+	-- AWS_REGION
+	-- PATH_TO_PRIVATE_KEY
+	-- PATH_TO_PUBLIC_KEY
+	-- ami
+- Provider
+- VPC
+	-- VPC
+	-- Subnet
+	-- Internet Gateway
+	-- Route Table
+	-- Route Table Assocations
+
+- Security Groups
+	-- Ingress
+	-- Egress
+
+- Key Pair
+- Instance
+	-- Root Volume Resize - 30GB
+- EIP
+- Output
+
+Ansible
+
+- machine_bootstrap
+	-- epel-release
+	-- Yum Update
+	-- Misc Packages - wget vim curl zip unzip git libselinux-python
+	-- Disable SELinux
+
+- Nginx
+	-- Install and Start
+
+- Java
+	-- 
